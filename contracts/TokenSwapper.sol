@@ -4,41 +4,56 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
 contract TokenSwapper {
-    IERC20 public token1;
-    address public owner1;
-    IERC20 public token2;
-    address public owner2;
+    IERC20 public token;
+    uint256 public rate = 100;
 
-    constructor(
-        address _token1,
-        address _owner1,
-        address _token2,
-        address _owner2
-    ) public {
-        token1 = IERC20(_token1);
-        owner1 = _owner1;
-        token2 = IERC20(_token2);
-        owner2 = _owner2;
+    event TokenPurchased(
+        address account,
+        address token,
+        uint256 amount,
+        uint256 rate
+    );
+
+    event TokenSold(
+        address account,
+        address token,
+        uint256 amount,
+        uint256 rate
+    );
+
+    constructor(IERC20 _token) {
+        token = _token;
+
     }
 
-    function testing () public view returns (string memory){
+    function testing() public pure returns (string memory) {
         return "123";
     }
 
-    function swapper(uint256 _amount1, uint256 _amount2) public {
-        // require(msg.sender == owner1 || msg.sender == owner2, "Not Authorize");
+    function SendEther() external payable {
+
+    }
+
+    function buyToken() public payable {
+        uint256 tokenAmount = msg.value * rate;
+        console.log(token.balanceOf(address(this)));
         require(
-            token1.allowance(owner1, address(this)) >= _amount1,
-            "Token 1 allowance too low"
+            token.balanceOf(address(this)) >= tokenAmount,
+            "Not enough token"
         );
-        require(
-            token2.allowance(owner2, address(this)) >= _amount2,
-            "Token 2 allowance too low"
-        );
-        console.log(token1.allowance(owner1, address(this)));
-        console.log(token2.allowance(owner2, address(this)));
-        _safeTransferFrom(token1, owner1, owner2, _amount1);
-        _safeTransferFrom(token2, owner2, owner1, _amount2);
+        token.transfer(msg.sender, tokenAmount);
+        emit TokenPurchased(msg.sender, address(token), tokenAmount, rate);
+    }
+
+    function sellToken(uint256 _amount) public {
+        require(token.balanceOf(msg.sender) >= _amount);
+        uint256 etherAmount = _amount / rate;
+        require(address(this).balance >= etherAmount);
+        // perform sale
+        token.transferFrom(msg.sender, address(this), _amount);
+        payable(msg.sender).transfer(etherAmount);
+        // submit event
+        emit TokenSold(msg.sender, address(token), _amount, rate);
     }
 
     function _safeTransferFrom(

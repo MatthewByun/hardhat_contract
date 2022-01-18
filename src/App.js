@@ -7,9 +7,9 @@ import { MoralisProvider } from 'react-moralis';
 const App = () => {
   return (
     <div className="App">
-      <MoralisProvider appId='ujTxo8V1mnyiXdaB63QizG2Ot4l8IYzdyHHlJP8l' serverUrl='https://cljgwxnm7r7m.usemoralis.com:2053/server'>
+      {/* <MoralisProvider appId='ujTxo8V1mnyiXdaB63QizG2Ot4l8IYzdyHHlJP8l' serverUrl='https://cljgwxnm7r7m.usemoralis.com:2053/server'> */}
         <WalletCard/>
-      </MoralisProvider>
+      {/* </MoralisProvider> */}
     </div> 
   );
 }
