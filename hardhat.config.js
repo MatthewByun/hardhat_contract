@@ -23,6 +23,10 @@ module.exports = {
       url: secret.url,
       accounts: [`${secret.key}`],
     },
+    local: {
+      url: secret.url_local,
+      accounts: [`${secret.key_local}`]
+    }
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
