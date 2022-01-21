@@ -23,7 +23,6 @@ contract TokenSwapper {
 
     constructor(IERC20 _token) {
         token = _token;
-
     }
 
     function testing() public pure returns (string memory) {
