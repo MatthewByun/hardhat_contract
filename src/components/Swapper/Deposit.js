@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { TOKEN_CONTRACT_ABI, TOKEN_ADDRESS } from "../../MyContractAbi";
 import {
   Box,
   Button,
@@ -9,8 +8,10 @@ import {
   Grid,
   GridItem,
   Heading,
+  InputGroup,
+  InputRightAddon,
+  Text,
 } from "@chakra-ui/react";
-import { TOKEN_ABI, TOKEN_ADDRESS_SS } from "../../abi/tokens/SSTokens";
 
 import { ADDRESS_POOL, ABI_POOL } from "../../abi/pools/DUB_SS";
 
@@ -43,27 +44,39 @@ const DepositPage = () => {
   };
   return (
     <Container centerContent>
-      <Heading as='h3'>Deposit to Pool</Heading>
-      <Box borderWidth={"2px"} borderRadius={`lg`} sx={{ marginTop: "50px" }}>
-        <Grid templateRows={"repeat(2,1fr)"} gap={3}>
-          <GridItem sx={{ marginTop: "30px" }}>
-            <Heading as="h4" size={"sm"}>
-              DUG deposit:
+      <Heading as="h3">Deposit from Pool</Heading>
+      <Box
+        borderWidth={"2px"}
+        w={`90%`}
+        borderRadius={`lg`}
+        sx={{ marginTop: "50px", padding: "30px" }}
+      >
+        <Grid templateRows={"repeat(1,1fr)"} gap={3}>
+          <GridItem>
+            <Heading as="h3" size={"xs"} sx={{ margin: "4px" }}>
+              Deposit DUG & SS
             </Heading>
-            <Input className="deposit" />
+          </GridItem>
+          <GridItem alignContent={"center"} justifyContent={"center"}>
+            <InputGroup>
+              <Input className="deposit" sx={{ maxWidth: "90%" }} />
+              <InputRightAddon children="DUG" />
+            </InputGroup>
+            <Text as={`sub`} >Balance: {balance} (DUG)</Text>
           </GridItem>
           <GridItem>
-            <Heading as="h4" size={"sm"}>
-              SS deposit:
-            </Heading>
-            <Input className="deposit" />
+          <InputGroup>
+              <Input className="deposit" sx={{ maxWidth: "90%" }} />
+              <InputRightAddon children="SS" />
+            </InputGroup>
           </GridItem>
-          <GridItem alignContent={`center`}>
-            <Button onClick={OnClickDeposit} colorScheme={`red`}>
+          <GridItem>
+            <Button
+              onClick={OnClickDeposit}
+              colorScheme={`red`}
+              isFullWidth={true}
+            >
               Deposit
-            </Button>
-            <Button onClick={OnClickDeposit}>
-              Cancel
             </Button>
           </GridItem>
         </Grid>

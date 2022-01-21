@@ -8,7 +8,9 @@ import {
   Grid,
   GridItem,
   Heading,
-  HStack,
+  InputGroup,
+  InputRightAddon,
+  Text,
 } from "@chakra-ui/react";
 
 import { ADDRESS_POOL, ABI_POOL } from "../../abi/pools/DUB_SS";
@@ -33,8 +35,8 @@ const WithdrawPage = () => {
   const OnClickSwap = async () => {
     const contract = new web3.eth.Contract(ABI_POOL, ADDRESS_POOL);
     // await contract.methods.
-    const dug = document.getElementsByClassName("swap")[0].value;
-    const ss = document.getElementsByClassName("swap")[1].value;
+    const dug = document.getElementsByClassName("withdraw")[0].value;
+    const ss = document.getElementsByClassName("withdraw")[1].value;
     // console.log(dug);
     // console.log(ss);
     // console.log(contract);
@@ -57,30 +59,39 @@ const WithdrawPage = () => {
   return (
     <Container centerContent>
       <Heading as="h3">Withdraw from Pool</Heading>
-      <Box borderWidth={"2px"} borderRadius={`lg`} sx={{ marginTop: "50px" }}>
-        <Grid templateRows={"repeat(2,1fr)"} gap={3}>
-          <GridItem sx={{ marginTop: "30px" }}>
-            <Heading as="h4" size={"sm"}>
-              DUG withdraw:
+      <Box
+        borderWidth={"2px"}
+        w={`90%`}
+        borderRadius={`lg`}
+        sx={{ marginTop: "50px", padding: "30px" }}
+      >
+        <Grid templateRows={"repeat(1,1fr)"} gap={3}>
+          <GridItem>
+            <Heading as="h3" size={"xs"} sx={{ margin: "4px" }}>
+              Withdraw DUG & SS
             </Heading>
-            <Input
-              className="swap"
-              sx={{ maxWidth: "90%", marginLeft: "5px" }}
-            />
+          </GridItem>
+          <GridItem alignContent={"center"} justifyContent={"center"}>
+            <InputGroup>
+              <Input className="withdraw" sx={{ maxWidth: "90%" }} />
+              <InputRightAddon children="DUG" />
+            </InputGroup>
+            <Text as={`sub`} >Balance: {balance} (DUG)</Text>
           </GridItem>
           <GridItem>
-            <Heading as="h4" size={"sm"}>
-              SS withdraw:
-            </Heading>
-            <Input className="swap" />
+          <InputGroup>
+              <Input className="withdraw" sx={{ maxWidth: "90%" }} />
+              <InputRightAddon children="SS" />
+            </InputGroup>
           </GridItem>
           <GridItem>
-            <HStack spacing={`60px`}>
-              <Button onClick={OnClickSwap} colorScheme={`red`}>
-                Withdraw
-              </Button>
-              <Button>Cancel</Button>
-            </HStack>
+            <Button
+              onClick={OnClickSwap}
+              colorScheme={`red`}
+              isFullWidth={true}
+            >
+              Withdraw
+            </Button>
           </GridItem>
         </Grid>
       </Box>
