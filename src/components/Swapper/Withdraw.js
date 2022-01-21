@@ -10,10 +10,8 @@ import {
   Heading,
   HStack,
 } from "@chakra-ui/react";
-import { TOKEN_ABI, TOKEN_ADDRESS_SS } from "../../abi/tokens/SSTokens";
 
 import { ADDRESS_POOL, ABI_POOL } from "../../abi/pools/DUB_SS";
-import { TOKEN_CONTRACT_ABI, TOKEN_ADDRESS } from "../../MyContractAbi";
 import Web3 from "web3";
 
 const WithdrawPage = () => {
