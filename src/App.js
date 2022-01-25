@@ -3,27 +3,20 @@ import WalletCard from "./components/WalletCard/WalletCard";
 import Deposit from "./components/Swapper/Deposit";
 import Swapper from "./components/Swapper/Swap";
 import Withdraw from "./components/Swapper/Withdraw";
-import { ChakraProvider } from "@chakra-ui/react";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom";
+import { ChakraProvider, Heading } from "@chakra-ui/react";
+import { Routes, Route } from "react-router-dom";
 import { Suspense } from "react";
 
 const App = () => {
   return (
     <div className="container">
       <ChakraProvider>
-        <Router>
-          <Switch>
-            <Route exact path="/" component={WalletCard} />
-            <Route exact path="/deposit" component={Deposit} />
-            <Route exact path="/swap" component={Swapper} />
-            <Route exact path="/withdraw" component={Withdraw} />
-          </Switch>
-        </Router>
+        <Routes>
+          <Route path="/" element={<WalletCard />} exact/>
+          <Route path="/deposit" element={<Deposit />} />
+          <Route path="/swap" element={<Swapper />} />
+          <Route path="/withdraw" element={<Withdraw />} />
+        </Routes>
       </ChakraProvider>
     </div>
   );

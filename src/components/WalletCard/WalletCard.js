@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { TOKEN_CONTRACT_ABI, TOKEN_ADDRESS } from "../../MyContractAbi";
-
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Grid,
@@ -14,8 +14,9 @@ import {
   Tr,
   Th,
   TableCaption,
+  Stack,
 } from "@chakra-ui/react";
-import { TOKEN_ABI, TOKEN_ADDRESS_SS } from "../../abi/tokens/SSTokens";
+import { TOKEN_ABI_SS, TOKEN_ADDRESS_SS } from "../../abi/tokens/SSTokens";
 
 import {
   CONTRACT_API_SWAPPER,
@@ -25,6 +26,7 @@ import {
 import { ADDRESS_POOL, ABI_POOL } from "../../abi/pools/DUB_SS";
 
 import Web3 from "web3";
+import { Link } from "react-router-dom";
 
 const OPTIONS_POOLING = [
   {
@@ -38,7 +40,7 @@ const WalletCard = () => {
   const web3 = new Web3(Web3.givenProvider);
   const [account, setAccount] = useState();
   const [balance, setBalance] = useState();
-
+  const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       const acc =
@@ -139,21 +141,21 @@ const WalletCard = () => {
     //   .send({ from: account })
     //   .then((receipt) => console.log(receipt));
 
-    
     const dugCoint = new web3.eth.Contract(TOKEN_CONTRACT_ABI, TOKEN_ADDRESS);
-    const SSCoin = new web3.eth.Contract(TOKEN_ABI, TOKEN_ADDRESS_SS);
+    const SSCoin = new web3.eth.Contract(TOKEN_ABI_SS, TOKEN_ADDRESS_SS);
     const totalDugSupp = await dugCoint.methods.totalSupply().call();
     const totalSSSup = await SSCoin.methods.totalSupply().call();
-    await dugCoint.methods.approve(element.address, totalDugSupp).send({from: account});
-    await SSCoin.methods.approve(element.address, totalSSSup).send({from: account});
-    console.log('not allowance', totalDugSupp);
-    console.log('not allowance', totalSSSup);
+    await dugCoint.methods
+      .approve(element.address, totalDugSupp)
+      .send({ from: account });
+    await SSCoin.methods
+      .approve(element.address, totalSSSup)
+      .send({ from: account });
+
     const dug = await dugCoint.methods
       .allowance(account, element.address)
       .call();
-    console.log("dug", dug);
     const ss = await SSCoin.methods.allowance(account, element.address).call();
-    console.log("ss", ss);
   };
 
   return (
@@ -223,6 +225,11 @@ const WalletCard = () => {
       </GridItem>
       <GridItem>
         <Heading as="h3">Pooling</Heading>
+        <Stack direction={"row-reverse"}>
+          <Button sx={{ maxWidth: "15%" }} colorScheme={`twitter`}>
+            + Create pool
+          </Button>
+        </Stack>
         <Table variant={`simple`}>
           <TableCaption>Pooling in system</TableCaption>
           <Thead>
@@ -235,6 +242,7 @@ const WalletCard = () => {
           <Tbody>
             {OPTIONS_POOLING.map((item, index) => (
               <Tr
+                onClick={() => navigate(`/swap`)}
                 key={index + 1}
                 sx={{
                   _hover: {
@@ -242,7 +250,6 @@ const WalletCard = () => {
                     cursor: "pointer",
                   },
                 }}
-                
               >
                 <Th>{item.name}</Th>
                 <Th>{item.address}</Th>

@@ -1,6 +1,6 @@
 export const TOKEN_ADDRESS_SS = "0x28afeecc16ef8c3cba817b1b91277b00d01ee9f6";
 
-export const TOKEN_ABI = [
+export const TOKEN_ABI_SS = [
   {
     inputs: [],
     stateMutability: "nonpayable",
