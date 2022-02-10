@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { TOKEN_CONTRACT_ABI, TOKEN_ADDRESS } from "../../MyContractAbi";
 import { useNavigate } from "react-router-dom";
+import { FACTORY_ABI, FACTORY_ADDRESS } from "../../abi/Utils/Factory";
+import { PAIR_ABI } from "../../abi/Utils/Pair";
 import {
   Button,
   Grid,
@@ -15,6 +17,7 @@ import {
   Th,
   TableCaption,
   Stack,
+  Spinner,
 } from "@chakra-ui/react";
 import { TOKEN_ABI_SS, TOKEN_ADDRESS_SS } from "../../abi/tokens/SSTokens";
 
@@ -26,7 +29,6 @@ import {
 import { ADDRESS_POOL, ABI_POOL } from "../../abi/pools/DUB_SS";
 
 import Web3 from "web3";
-import { Link } from "react-router-dom";
 
 const OPTIONS_POOLING = [
   {
@@ -40,6 +42,8 @@ const WalletCard = () => {
   const web3 = new Web3(Web3.givenProvider);
   const [account, setAccount] = useState();
   const [balance, setBalance] = useState();
+  const [pairs, setPairs] = useState([]);
+
   const navigate = useNavigate();
   useEffect(() => {
     (async () => {
@@ -48,6 +52,20 @@ const WalletCard = () => {
       const bal = await web3.eth.getBalance(acc[0]);
       setAccount(acc[0]);
       setBalance(bal);
+
+      const factory = new web3.eth.Contract(FACTORY_ABI, FACTORY_ADDRESS);
+
+      const pools = [];
+      const number_pools = await factory.methods.allPairsLength().call();
+      for (let i = 0; i < number_pools; i++) {
+        let pair = await factory.methods.allPairs(i).call();
+        let pairContract = new web3.eth.Contract(PAIR_ABI, pair);
+        let token0 = await pairContract.methods.token0().call();
+        let token1 = await pairContract.methods.token1().call();
+        // console.log('here',pairContract);
+        pools.push({ token1: token0, token2: token1, pair: pair });
+      }
+      setPairs(pools);
     })();
   }, []);
 
@@ -152,10 +170,11 @@ const WalletCard = () => {
       .approve(element.address, totalSSSup)
       .send({ from: account });
 
-    const dug = await dugCoint.methods
-      .allowance(account, element.address)
-      .call();
-    const ss = await SSCoin.methods.allowance(account, element.address).call();
+    // get allowance for contract
+    // const dug = await dugCoint.methods
+    //   .allowance(account, element.address)
+    //   .call();
+    // const ss = await SSCoin.methods.allowance(account, element.address).call();
   };
 
   return (
@@ -226,7 +245,13 @@ const WalletCard = () => {
       <GridItem>
         <Heading as="h3">Pooling</Heading>
         <Stack direction={"row-reverse"}>
-          <Button sx={{ maxWidth: "15%" }} colorScheme={`twitter`}>
+          <Button
+            sx={{ maxWidth: "15%" }}
+            colorScheme={`twitter`}
+            onClick={() => {
+              navigate(`/create-pool`);
+            }}
+          >
             + Create pool
           </Button>
         </Stack>
@@ -234,35 +259,53 @@ const WalletCard = () => {
           <TableCaption>Pooling in system</TableCaption>
           <Thead>
             <Tr>
-              <Th>DUO</Th>
-              <Th>Address</Th>
-              <Th>Approve</Th>
+              <Th>Address Pair</Th>
+              <Th>Token 1</Th>
+              <Th>Token 2</Th>
+              <Th>Add liquidity</Th>
+              <Th>Transaction</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {OPTIONS_POOLING.map((item, index) => (
-              <Tr
-                onClick={() => navigate(`/swap`)}
-                key={index + 1}
-                sx={{
-                  _hover: {
-                    bgColor: "whitesmoke",
-                    cursor: "pointer",
-                  },
-                }}
-              >
-                <Th>{item.name}</Th>
-                <Th>{item.address}</Th>
-                <Th>
-                  <Button
-                    colorScheme={`whatsapp`}
-                    onClick={() => ApproveToContract(item)}
-                  >
-                    Approve token
-                  </Button>
-                </Th>
+            {pairs.length > 0 ? (
+              pairs.map((item, index) => (
+                <Tr
+                  // onClick={() => navigate(`/swap`)}
+                  key={index + 1}
+                  sx={{
+                    _hover: {
+                      bgColor: "whitesmoke",
+                      cursor: "pointer",
+                    },
+                  }}
+                >
+                  {/* <Th>{item.name}</Th> */}
+                  <Th>{item.pair}</Th>
+                  <Th>{item.token1}</Th>
+                  <Th>{item.token2}</Th>
+                  <Th>
+                    <Button
+                      colorScheme={`whatsapp`}
+                      onClick={() => navigate(`/addLiquidity/${item.pair}`)}
+                    >
+                      Add Liquidity
+                    </Button>
+                  </Th>
+                  <Th>
+                    <Button
+                      colorScheme={`orange`}
+                      onClick={() => navigate(`/swapLiquidity/${item.pair}`)}
+                    >
+                      Swap token
+                    </Button>
+                  </Th>
+                </Tr>
+              ))
+            ) : (
+              <Tr>
+                <Th><Spinner /></Th>
               </Tr>
-            ))}
+            )}
           </Tbody>
         </Table>
       </GridItem>
